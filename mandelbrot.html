@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Mandelbrot Set</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <canvas width="350" height="200" id="canvas"></canvas>
+        <script type="application/javascript">
+            const ctx = document.getElementById("canvas").getContext("2d");
+            const w = ctx.canvas.width;
+            const h = ctx.canvas.height;
+            
+            const opts = {
+                off_x: 0,
+                off_y: 0,
+                zoom: 1,
+                iter: 50,
+                step: w / 25,
+                width: w,
+                height: h,
+            }
+
+            document.addEventListener('keydown', (e) => {
+                //console.log(e);
+                switch (e.keyCode) {
+                    case 37:
+                        opts.iter -= 10;
+                        break;
+
+                    case 38:
+                        opts.zoom *= 1.25;
+                        break;
+
+                    case 39:
+                        opts.iter += 10;
+                        break;
+
+                    case 40:
+                        opts.zoom /= 1.25;
+                        break;
+
+                    case 65:
+                        opts.off_x -= opts.step / opts.zoom;
+                        break;
+
+                    case 68:
+                        opts.off_x += opts.step / opts.zoom;
+                        break;
+
+                    case 83:
+                        opts.off_y += opts.step / opts.zoom;
+                        break;
+
+                    case 87:
+                        opts.off_y -= opts.step / opts.zoom;
+                        break;
+                }
+
+                draw_mandelbrot(opts);
+            })
+
+            //ctx.transform(1, 0, 0, 1, 2 * w / 7, h / 2);
+
+            function scale(cx, cy, zoom, ox, oy) {
+                return {
+                    sx: (3.5 * (ox + cx / zoom) / w) - 2.5,
+                    sy: (2 * (oy + cy / zoom) / h) - 1
+                };
+            }
+
+            function getColour(iter, max) {
+                let colour = parseInt(255 - (255 * iter / max)).toString(16);
+                return `#${colour}${colour}${colour}`;
+            }
+
+            function draw_mandelbrot(obj) {
+                for (let cx = 0; cx < obj.width; cx++) {
+                    for (let cy = 0; cy < obj.height; cy++) {
+                        const {sx, sy} = scale(cx, cy, obj.zoom, obj.off_x, obj.off_y);
+                        let x = 0;
+                        let y = 0;
+                        let iteration = 0;
+                        
+                        for (; (x * x) + (y * y) <= 4 && iteration < obj.iter; iteration++) {
+                            const tmpx = (x * x) - (y * y) + sx;
+                            y = (2 * x * y) + sy;
+                            x = tmpx;
+                        }
+
+                        ctx.fillStyle = getColour(iteration, obj.iter);
+
+                        ctx.fillRect(cx, cy, 1, 1);
+
+                    }
+                }
+            }
+
+            draw_mandelbrot(opts);
+
+        </script>
+    </body>
+</html>

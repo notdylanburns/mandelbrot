@@ -1,0 +1,9 @@
+.vscode
+*.txt
+*.txt.*
+cgol
+cgol.c
+main
+mandel.conf
+mandelgen
+run.sh
